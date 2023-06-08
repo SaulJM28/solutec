@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-06-2023 a las 20:47:31
+-- Tiempo de generación: 08-06-2023 a las 23:05:49
 -- Versión del servidor: 10.4.24-MariaDB
 -- Versión de PHP: 7.4.29
 
@@ -20,9 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `solutec`
 --
-
--- Creacion de la base de datos
-CREATE DATABASE solutec;
 
 -- --------------------------------------------------------
 
@@ -41,11 +38,11 @@ CREATE TABLE `areas` (
 --
 
 INSERT INTO `areas` (`id_are`, `nom_are`, `num_emp`) VALUES
-(2, 'Contabilidad', -1),
-(3, 'RH', 2),
+(2, 'Contabilidad', 0),
+(3, 'RH', 0),
 (6, 'inventarios', 0),
 (9, 'Gerencia', 0),
-(11, 'TI', 1);
+(11, 'TI', 0);
 
 -- --------------------------------------------------------
 
@@ -62,14 +59,6 @@ CREATE TABLE `empleados` (
   `fecha_nac` date DEFAULT NULL,
   `id_are` int(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Volcado de datos para la tabla `empleados`
---
-
-INSERT INTO `empleados` (`id_emp`, `nom`, `ap1`, `ap2`, `correo`, `fecha_nac`, `id_are`) VALUES
-(3, 'raul', 'martinez', 'juarez', 'saurismartinez@outlook.com', '1999-03-28', 11),
-(4, 'raul1', 'martinez11', 'juarez', 'saurismartinez1@outlook.com', '1999-04-28', 3);
 
 --
 -- Disparadores `empleados`
@@ -103,12 +92,19 @@ $$
 DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `decremento_empleados_trigger` AFTER DELETE ON `empleados` FOR EACH ROW BEGIN
-    -- Verificar si el número de empleados es mayor a 0
-    IF (SELECT num_emp FROM areas WHERE id_are = OLD.id_are) > 0 THEN
-        -- Restar el número de empleados en el área correspondiente
+    DECLARE contador INT;
+    SELECT COUNT(*) INTO contador FROM empleados WHERE id_are = OLD.id_are;
+    
+    IF contador = 0 THEN
         UPDATE areas
-        SET num_emp = num_emp - 1
+        SET num_emp = 0
         WHERE id_are = OLD.id_are;
+    ELSE
+        IF (SELECT num_emp FROM areas WHERE id_are = OLD.id_are) > 0 THEN
+            UPDATE areas
+            SET num_emp = num_emp - 1
+            WHERE id_are = OLD.id_are;
+        END IF;
     END IF;
 END
 $$
@@ -144,7 +140,7 @@ ALTER TABLE `areas`
 -- AUTO_INCREMENT de la tabla `empleados`
 --
 ALTER TABLE `empleados`
-  MODIFY `id_emp` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_emp` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
