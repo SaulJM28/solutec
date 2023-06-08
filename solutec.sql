@@ -21,6 +21,9 @@ SET time_zone = "+00:00";
 -- Base de datos: `solutec`
 --
 
+-- Creacion de la base de datos
+CREATE DATABASE solutec;
+
 -- --------------------------------------------------------
 
 --

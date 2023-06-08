@@ -26,7 +26,7 @@ class Empleado extends CI_Controller
         } else {
             $response = array(
                 'success' => false,
-                'message' => 'No se encontraron datos con INNER JOIN.'
+                'data' => ''
             );
         }
         $this->output
